@@ -51,7 +51,7 @@ File path arguments can be individual files or glob patterns. If the shell does 
 
 ## Build
 
-Use [`build.sh`](/data/data/com.termux/files/home/src/bucket-policy-decoder/build.sh) to build the binary locally:
+Use [build.sh](/data/data/com.termux/files/home/src/bucket-policy-decoder/build.sh) to build the binary locally:
 
 ```bash
 ./build.sh
@@ -118,14 +118,14 @@ AWS exposes more complete policy validation through IAM Access Analyzer’s `Val
 
 ## Example policies
 
-Files in [`examples/`](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples):
+Example files:
 
-- [`examples/deny-insecure-transport.json`](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/deny-insecure-transport.json)
-- [`examples/allow-cross-account-upload.json`](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/allow-cross-account-upload.json)
-- [`examples/require-kms-encryption.json`](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/require-kms-encryption.json)
-- [`examples/restrict-to-organization.json`](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/restrict-to-organization.json)
-- [`examples/require-storage-class.json`](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/require-storage-class.json)
-- [`examples/deny-everyone-except-two-principals.json`](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/deny-everyone-except-two-principals.json)
+- [examples/deny-insecure-transport.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/deny-insecure-transport.json)
+- [examples/allow-cross-account-upload.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/allow-cross-account-upload.json)
+- [examples/require-kms-encryption.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/require-kms-encryption.json)
+- [examples/restrict-to-organization.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/restrict-to-organization.json)
+- [examples/require-storage-class.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/require-storage-class.json)
+- [examples/deny-everyone-except-two-principals.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/deny-everyone-except-two-principals.json)
 
 The first five are based on patterns from the AWS S3 example bucket policy guide. The last one is a custom example with explicit exceptions.
 
