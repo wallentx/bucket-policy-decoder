@@ -1,0 +1,43 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyEveryoneExceptApprovedReaders",
+      "Effect": "Deny",
+      "NotPrincipal": {
+        "AWS": [
+          "123456789012",
+          "arn:aws:iam::210987654321:role/AnalyticsReader"
+        ]
+      },
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::sensitive-exports",
+        "arn:aws:s3:::sensitive-exports/*"
+      ]
+    },
+    {
+      "Sid": "AllowApprovedReadersWithMFA",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "123456789012",
+          "arn:aws:iam::210987654321:role/AnalyticsReader"
+        ]
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::sensitive-exports",
+        "arn:aws:s3:::sensitive-exports/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:MultiFactorAuthPresent": "true"
+        }
+      }
+    }
+  ]
+}
