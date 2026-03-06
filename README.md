@@ -45,7 +45,7 @@ cat examples/allow-cross-account-upload.json | go run .
 
 If you run the tool without flags and without piped stdin, it opens a simple interactive prompt so you can choose file or pasted JSON input.
 
-Use `-s` or `--short` to print only the plain-English reading.
+Use `-s` or `--short` to print only the plain-English reading. When the input comes from files, short mode prints the filename first and then the numbered summary for that file.
 
 File path arguments can be individual files or glob patterns. If the shell does not expand the glob, the CLI will try to expand it itself.
 

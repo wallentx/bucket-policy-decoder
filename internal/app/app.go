@@ -41,6 +41,9 @@ func Run(cfg Config, stdin io.Reader, stdout, stderr io.Writer) error {
 			if idx > 0 {
 				fmt.Fprintln(stdout)
 			}
+			if input.IsFile {
+				fmt.Fprintln(stdout, styleShortFilename(input.Name, color))
+			}
 			fmt.Fprint(stdout, policy.RenderPlainEnglishWithOptions(parsed, policy.RenderOptions{
 				Color: color,
 			}))
@@ -73,8 +76,9 @@ func Run(cfg Config, stdin io.Reader, stdout, stderr io.Writer) error {
 }
 
 type inputDocument struct {
-	Name string
-	Raw  []byte
+	Name   string
+	Raw    []byte
+	IsFile bool
 }
 
 func shouldColorize(w io.Writer) bool {
@@ -99,8 +103,9 @@ func readInputs(cfg Config, stdin io.Reader, stdout, stderr io.Writer) ([]inputD
 				return nil, err
 			}
 			inputs = append(inputs, inputDocument{
-				Name: path,
-				Raw:  data,
+				Name:   path,
+				Raw:    data,
+				IsFile: true,
 			})
 		}
 		return inputs, nil
@@ -126,6 +131,13 @@ func readInputs(cfg Config, stdin io.Reader, stdout, stderr io.Writer) ([]inputD
 		}
 		return []inputDocument{{Name: name, Raw: raw}}, nil
 	}
+}
+
+func styleShortFilename(name string, color bool) string {
+	if !color || name == "" {
+		return name
+	}
+	return "\x1b[38;5;141m" + name + "\x1b[0m"
 }
 
 func expandFileInputs(flagPath string, args []string) ([]string, error) {
