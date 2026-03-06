@@ -51,7 +51,7 @@ File path arguments can be individual files or glob patterns. If the shell does 
 
 ## Build
 
-Use [build.sh](/data/data/com.termux/files/home/src/bucket-policy-decoder/build.sh) to build the binary locally:
+Use [build.sh](https://github.com/wallentx/bucket-policy-decoder/blob/main/build.sh) to build the binary locally:
 
 ```bash
 ./build.sh
@@ -120,12 +120,12 @@ AWS exposes more complete policy validation through IAM Access Analyzer’s `Val
 
 Example files:
 
-- [examples/deny-insecure-transport.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/deny-insecure-transport.json)
-- [examples/allow-cross-account-upload.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/allow-cross-account-upload.json)
-- [examples/require-kms-encryption.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/require-kms-encryption.json)
-- [examples/restrict-to-organization.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/restrict-to-organization.json)
-- [examples/require-storage-class.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/require-storage-class.json)
-- [examples/deny-everyone-except-two-principals.json](/data/data/com.termux/files/home/src/bucket-policy-decoder/examples/deny-everyone-except-two-principals.json)
+- [examples/deny-insecure-transport.json](https://github.com/wallentx/bucket-policy-decoder/blob/main/examples/deny-insecure-transport.json)
+- [examples/allow-cross-account-upload.json](https://github.com/wallentx/bucket-policy-decoder/blob/main/examples/allow-cross-account-upload.json)
+- [examples/require-kms-encryption.json](https://github.com/wallentx/bucket-policy-decoder/blob/main/examples/require-kms-encryption.json)
+- [examples/restrict-to-organization.json](https://github.com/wallentx/bucket-policy-decoder/blob/main/examples/restrict-to-organization.json)
+- [examples/require-storage-class.json](https://github.com/wallentx/bucket-policy-decoder/blob/main/examples/require-storage-class.json)
+- [examples/deny-everyone-except-two-principals.json](https://github.com/wallentx/bucket-policy-decoder/blob/main/examples/deny-everyone-except-two-principals.json)
 
 The first five are based on patterns from the AWS S3 example bucket policy guide. The last one is a custom example with explicit exceptions.
 
