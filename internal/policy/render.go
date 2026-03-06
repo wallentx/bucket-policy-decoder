@@ -20,9 +20,18 @@ func Render(p Policy) string {
 	return RenderWithOptions(p, RenderOptions{})
 }
 
+func RenderPlainEnglish(p Policy) string {
+	return RenderPlainEnglishWithOptions(p, RenderOptions{})
+}
+
 func RenderWithOptions(p Policy, opts RenderOptions) string {
 	r := renderer{color: opts.Color}
 	return r.render(p)
+}
+
+func RenderPlainEnglishWithOptions(p Policy, opts RenderOptions) string {
+	r := renderer{color: opts.Color}
+	return r.renderPlainEnglish(p)
 }
 
 func ShouldColorizeTerminalOutput(f *os.File) bool {
@@ -70,18 +79,22 @@ func (r renderer) render(p Policy) string {
 		b.WriteString("- Explicit denies override matching allows.\n")
 	}
 
-	for idx, stmt := range p.Statement {
-		if idx == 0 {
-			b.WriteString("\nPlain-English reading:\n")
-		}
-		fmt.Fprintf(&b, "%d. %s\n", idx+1, r.sentenceForStatement(stmt))
-	}
+	b.WriteString("\nPlain-English reading:\n")
+	b.WriteString(r.renderPlainEnglish(p))
 
 	b.WriteString("\nStatement breakdown:\n")
 	for idx, stmt := range p.Statement {
 		r.renderStatement(&b, idx, stmt)
 	}
 
+	return b.String()
+}
+
+func (r renderer) renderPlainEnglish(p Policy) string {
+	var b strings.Builder
+	for idx, stmt := range p.Statement {
+		fmt.Fprintf(&b, "%d. %s\n", idx+1, r.sentenceForStatement(stmt))
+	}
 	return b.String()
 }
 
