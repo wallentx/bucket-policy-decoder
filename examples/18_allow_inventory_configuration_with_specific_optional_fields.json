@@ -1,0 +1,23 @@
+{
+  "Id": "InventoryConfigPolicy",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowInventoryCreationConditionally",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::111122223333:user/Ana"
+      },
+      "Action": "s3:PutInventoryConfiguration",
+      "Resource": "arn:aws:s3:::DOC-EXAMPLE-SOURCE-BUCKET",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "s3:InventoryAccessibleOptionalFields": [
+            "Size",
+            "StorageClass"
+          ]
+        }
+      }
+    }
+  ]
+}

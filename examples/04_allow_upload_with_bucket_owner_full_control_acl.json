@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PolicyForAllowUploadWithACL",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "111122223333"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::amzn-s3-demo-bucket/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+      }
+    }
+  ]
+}

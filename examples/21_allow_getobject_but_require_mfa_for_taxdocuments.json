@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Id": "123",
+  "Statement": [
+    {
+      "Sid": "DenyInsecureConnections",
+      "Effect": "Deny",
+      "Principal": {
+        "AWS": "arn:aws:iam::111122223333:root"
+      },
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::amzn-s3-demo-bucket/taxdocuments/*",
+      "Condition": {
+        "Null": {
+          "aws:MultiFactorAuthAge": true
+        }
+      }
+    },
+    {
+      "Sid": "AllowGetObject",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::111122223333:root"
+      },
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::amzn-s3-demo-bucket/*"
+    }
+  ]
+}

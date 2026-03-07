@@ -22,9 +22,14 @@ func TestParseFlagsAcceptsPositionalFilesAndShort(t *testing.T) {
 	}
 }
 
-func TestParseFlagsRejectsMixedFileAndJSONSources(t *testing.T) {
-	_, err := parseFlags([]string{"--json", "{}", "policy.json"})
-	if err == nil {
-		t.Fatal("parseFlags(mixed sources) error = nil, want non-nil")
+func TestParseFlagsRejectsRemovedInputFlags(t *testing.T) {
+	for _, args := range [][]string{
+		{"--file", "policy.json"},
+		{"--paste"},
+		{"--json", "{}"},
+	} {
+		if _, err := parseFlags(args); err == nil {
+			t.Fatalf("parseFlags(%v) error = nil, want non-nil", args)
+		}
 	}
 }

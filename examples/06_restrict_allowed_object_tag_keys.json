@@ -1,0 +1,27 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::111122223333:role/JohnDoe"
+        ]
+      },
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObjectTagging"
+      ],
+      "Resource": [
+        "arn:aws:s3:::amzn-s3-demo-bucket/*"
+      ],
+      "Condition": {
+        "ForAnyValue:StringEquals": {
+          "s3:RequestObjectTagKeys": [
+            "Owner",
+            "CreationDate"
+          ]
+        }
+      }
+    }
+  ]
+}

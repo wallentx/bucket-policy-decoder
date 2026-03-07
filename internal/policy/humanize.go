@@ -20,19 +20,24 @@ type resourceScope struct {
 var actionLabels = map[string]string{
 	"s3:AbortMultipartUpload":       "cancel multipart uploads",
 	"s3:DeleteObject":               "delete objects",
+	"s3:DeleteObjectVersion":        "delete object versions",
+	"s3:GetBucketAcl":               "read the bucket ACL",
 	"s3:GetBucketLocation":          "read the bucket location",
 	"s3:GetBucketPolicy":            "read the bucket policy",
 	"s3:GetEncryptionConfiguration": "read default encryption settings",
 	"s3:GetLifecycleConfiguration":  "read lifecycle rules",
 	"s3:GetObject":                  "read/download objects",
 	"s3:GetObjectAcl":               "read object ACLs",
+	"s3:GetObjectVersion":           "read/download object versions",
 	"s3:ListBucket":                 "list the bucket contents",
 	"s3:ListBucketMultipartUploads": "list in-progress multipart uploads",
 	"s3:PutBucketPolicy":            "change the bucket policy",
 	"s3:PutEncryptionConfiguration": "change default encryption settings",
+	"s3:PutInventoryConfiguration":  "change inventory settings",
 	"s3:PutLifecycleConfiguration":  "change lifecycle rules",
 	"s3:PutObject":                  "upload objects",
 	"s3:PutObjectAcl":               "change object ACLs",
+	"s3:PutObjectTagging":           "set object tags",
 }
 
 func (r renderer) describeActivity(stmt Statement) (string, bool) {
@@ -129,11 +134,27 @@ func parseS3Resource(resource string) (resourceScope, bool) {
 
 func (r renderer) actionActivity(action string, scope resourceScope) (string, bool) {
 	switch action {
+	case "s3:*":
+		switch {
+		case scope.supportsBucket() && scope.supportsObjects():
+			return r.paintActionMeaning("perform any S3 action") + " on " + r.bucketTarget(scope) + " and its objects", true
+		case scope.supportsObjects():
+			return r.paintActionMeaning("perform any S3 action") + " on " + r.objectTarget(scope), true
+		case scope.supportsBucket():
+			return r.paintActionMeaning("perform any S3 action") + " on " + r.bucketTarget(scope), true
+		default:
+			return "", false
+		}
 	case "s3:GetObject":
 		if !scope.supportsObjects() {
 			return "", false
 		}
 		return r.paintActionMeaning("read/download objects") + " from " + r.objectTarget(scope), true
+	case "s3:GetObjectVersion":
+		if !scope.supportsObjects() {
+			return "", false
+		}
+		return r.paintActionMeaning("read/download object versions") + " from " + r.objectTarget(scope), true
 	case "s3:PutObject":
 		if !scope.supportsObjects() {
 			return "", false
@@ -144,6 +165,11 @@ func (r renderer) actionActivity(action string, scope resourceScope) (string, bo
 			return "", false
 		}
 		return r.paintActionMeaning("delete objects") + " from " + r.objectTarget(scope), true
+	case "s3:DeleteObjectVersion":
+		if !scope.supportsObjects() {
+			return "", false
+		}
+		return r.paintActionMeaning("delete object versions") + " from " + r.objectTarget(scope), true
 	case "s3:GetObjectAcl":
 		if !scope.supportsObjects() {
 			return "", false
@@ -154,6 +180,11 @@ func (r renderer) actionActivity(action string, scope resourceScope) (string, bo
 			return "", false
 		}
 		return r.paintActionMeaning("change object ACLs") + " in " + r.objectTarget(scope), true
+	case "s3:PutObjectTagging":
+		if !scope.supportsObjects() {
+			return "", false
+		}
+		return r.paintActionMeaning("set object tags") + " on " + r.objectTarget(scope), true
 	case "s3:AbortMultipartUpload":
 		if !scope.supportsObjects() {
 			return "", false
@@ -174,6 +205,11 @@ func (r renderer) actionActivity(action string, scope resourceScope) (string, bo
 			return "", false
 		}
 		return r.paintActionMeaning("read the location of") + " " + r.bucketTarget(scope), true
+	case "s3:GetBucketAcl":
+		if !scope.supportsBucket() {
+			return "", false
+		}
+		return r.paintActionMeaning("read the bucket ACL on") + " " + r.bucketTarget(scope), true
 	case "s3:GetBucketPolicy":
 		if !scope.supportsBucket() {
 			return "", false
@@ -194,6 +230,11 @@ func (r renderer) actionActivity(action string, scope resourceScope) (string, bo
 			return "", false
 		}
 		return r.paintActionMeaning("change lifecycle rules on") + " " + r.bucketTarget(scope), true
+	case "s3:PutInventoryConfiguration":
+		if !scope.supportsBucket() {
+			return "", false
+		}
+		return r.paintActionMeaning("change inventory settings on") + " " + r.bucketTarget(scope), true
 	case "s3:GetEncryptionConfiguration":
 		if !scope.supportsBucket() {
 			return "", false
@@ -237,7 +278,7 @@ func (r renderer) objectTarget(scope resourceScope) string {
 }
 
 func (r renderer) paintActionMeaning(value string) string {
-	return r.paint(value, "1;33")
+	return r.paintWords(value, "1;33")
 }
 
 func (s resourceScope) supportsBucket() bool {

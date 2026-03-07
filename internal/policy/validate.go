@@ -23,6 +23,7 @@ type Finding struct {
 
 type ValidationResult struct {
 	Findings []Finding
+	UsedAWS  bool
 }
 
 func Validate(p Policy) ValidationResult {
@@ -63,11 +64,11 @@ func (r ValidationResult) HasWarnings() bool {
 
 func (r ValidationResult) Render(color bool) string {
 	if len(r.Findings) == 0 {
-		return "Validation: passed offline checks.\n"
+		return ""
 	}
 
 	var b strings.Builder
-	b.WriteString("Validation:\n")
+	b.WriteString("Issues:\n")
 	for _, finding := range r.Findings {
 		label := string(finding.Severity)
 		if color {
@@ -81,6 +82,13 @@ func (r ValidationResult) Render(color bool) string {
 		fmt.Fprintf(&b, "- %s %s: %s\n", label, finding.Path, finding.Message)
 	}
 	return b.String()
+}
+
+func (r *ValidationResult) Merge(other ValidationResult) {
+	if other.UsedAWS {
+		r.UsedAWS = true
+	}
+	r.Findings = append(r.Findings, other.Findings...)
 }
 
 func (r *ValidationResult) addError(path, message string) {
@@ -266,7 +274,8 @@ func validateConditions(result *ValidationResult, path string, conditions Condit
 			if key == "" {
 				result.addError(entryPath, "condition key must not be empty")
 			}
-			if operator == "Bool" {
+			_, baseOperator, _ := splitConditionOperator(operator)
+			if baseOperator == "Bool" {
 				for _, value := range values {
 					if !conditionBoolPattern.MatchString(value) {
 						result.addWarning(entryPath, `Bool conditions usually use "true" or "false"`)
@@ -281,7 +290,8 @@ func validateConditions(result *ValidationResult, path string, conditions Condit
 }
 
 func knownConditionOperator(operator string) bool {
-	switch operator {
+	_, baseOperator, _ := splitConditionOperator(operator)
+	switch baseOperator {
 	case "ArnEquals",
 		"ArnLike",
 		"ArnNotEquals",

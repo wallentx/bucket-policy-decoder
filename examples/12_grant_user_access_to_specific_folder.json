@@ -1,0 +1,69 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowRootAndHomeListingOfCompanyBucket",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::111122223333:user/JohnDoe"
+        ]
+      },
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::amzn-s3-demo-bucket"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "s3:prefix": [
+            "",
+            "home/",
+            "home/JohnDoe"
+          ],
+          "s3:delimiter": [
+            "/"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowListingOfUserFolder",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::111122223333:user/JohnDoe"
+        ]
+      },
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::amzn-s3-demo-bucket"
+      ],
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "home/JohnDoe/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowAllS3ActionsInUserFolder",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::111122223333:user/JohnDoe"
+        ]
+      },
+      "Action": [
+        "s3:*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::amzn-s3-demo-bucket/home/JohnDoe/*"
+      ]
+    }
+  ]
+}

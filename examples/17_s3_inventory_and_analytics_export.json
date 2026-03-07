@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InventoryAndAnalyticsExamplePolicy",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "s3:PutObject",
+      "Resource": [
+        "arn:aws:s3:::amzn-s3-demo-destination-bucket/*"
+      ],
+      "Condition": {
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:s3:::amzn-s3-demo-source-bucket"
+        },
+        "StringEquals": {
+          "aws:SourceAccount": "111122223333",
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+      }
+    }
+  ]
+}

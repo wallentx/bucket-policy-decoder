@@ -29,6 +29,36 @@ func TestParseSingleStatementObject(t *testing.T) {
 	}
 }
 
+func TestParseConditionValuesAcceptsBooleansAndNumbers(t *testing.T) {
+	input := []byte(`{
+		"Version":"2012-10-17",
+		"Statement":[
+			{
+				"Effect":"Deny",
+				"Principal":"*",
+				"Action":"s3:*",
+				"Resource":"arn:aws:s3:::demo/*",
+				"Condition":{
+					"Null":{"aws:MultiFactorAuthAge":true},
+					"NumericGreaterThan":{"aws:MultiFactorAuthAge":3600}
+				}
+			}
+		]
+	}`)
+
+	got, err := Parse(input)
+	if err != nil {
+		t.Fatalf("Parse(boolean and numeric conditions) error: %v", err)
+	}
+
+	if gotCond := got.Statement[0].Condition["Null"]["aws:MultiFactorAuthAge"][0]; gotCond != "true" {
+		t.Errorf("Null aws:MultiFactorAuthAge = %q, want %q", gotCond, "true")
+	}
+	if gotCond := got.Statement[0].Condition["NumericGreaterThan"]["aws:MultiFactorAuthAge"][0]; gotCond != "3600" {
+		t.Errorf("NumericGreaterThan aws:MultiFactorAuthAge = %q, want %q", gotCond, "3600")
+	}
+}
+
 func TestRenderExplainsDenyEveryoneTLS(t *testing.T) {
 	policyJSON := []byte(`{
 		"Version":"2012-10-17",
@@ -64,7 +94,7 @@ func TestRenderExplainsDenyEveryoneTLS(t *testing.T) {
 		"1 explicit deny statement.",
 		"1 allow statement.",
 		"Explicit denies override matching allows.",
-		"It prevents everyone from using all S3 actions on bucket logs-bucket and every object in it when the request is not using HTTPS.",
+		"It prevents everyone from being able to perform any S3 action on bucket logs-bucket and its objects when the request is not using HTTPS.",
 		"the AWS service cloudtrail.amazonaws.com",
 		`It allows the AWS service cloudtrail.amazonaws.com to upload objects to bucket logs-bucket path AWSLogs/123456789012/* only when the upload sets the ACL to "bucket-owner-full-control".`,
 	}
@@ -165,7 +195,7 @@ func TestRenderWithOptionsAddsANSIColor(t *testing.T) {
 	wantParts := []string{
 		"\x1b[1;36m123456789012\x1b[0m",
 		"\x1b[1;35mAnalyticsReader\x1b[0m",
-		"\x1b[1;33mread/download objects\x1b[0m",
+		"\x1b[1;33mread/download\x1b[0m \x1b[1;33mobjects\x1b[0m",
 		"\x1b[1;33ms3:GetObject\x1b[0m",
 		"\x1b[1;34msensitive-exports\x1b[0m",
 		"MFA is present",

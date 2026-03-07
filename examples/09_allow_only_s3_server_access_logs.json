@@ -1,0 +1,34 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowPutObjectS3ServerAccessLogsPolicy",
+      "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::amzn-s3-demo-bucket-logs/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "111122223333"
+        },
+        "ArnLike": {
+          "aws:SourceArn": "arn:aws:s3:::amzn-s3-demo-source-bucket1"
+        }
+      }
+    },
+    {
+      "Sid": "RestrictToS3ServerAccessLogs",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::amzn-s3-demo-bucket-logs/*",
+      "Condition": {
+        "ForAllValues:StringNotEquals": {
+          "aws:PrincipalServiceNamesList": "logging.s3.amazonaws.com"
+        }
+      }
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 )
 
 type Policy struct {
@@ -50,6 +51,7 @@ func Parse(data []byte) (Policy, error) {
 }
 
 func ReadFile(path string) ([]byte, error) {
+	// #nosec G304 -- this CLI intentionally reads the exact path the user supplied.
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("read %q: %w", path, err)
@@ -149,15 +151,58 @@ func (c *Conditions) UnmarshalJSON(data []byte) error {
 	for operator, entries := range raw {
 		parsed[operator] = make(map[string][]string, len(entries))
 		for key, value := range entries {
-			var list StringList
-			if err := json.Unmarshal(value, &list); err != nil {
+			list, err := parseConditionValueList(value)
+			if err != nil {
 				return err
 			}
-			parsed[operator][key] = []string(list)
+			parsed[operator][key] = list
 		}
 	}
 	*c = parsed
 	return nil
+}
+
+func parseConditionValueList(data []byte) ([]string, error) {
+	data = bytes.TrimSpace(data)
+	if len(data) == 0 || bytes.Equal(data, []byte("null")) {
+		return nil, nil
+	}
+	switch data[0] {
+	case '"':
+		var single string
+		if err := json.Unmarshal(data, &single); err != nil {
+			return nil, err
+		}
+		return []string{single}, nil
+	case 't', 'f':
+		var value bool
+		if err := json.Unmarshal(data, &value); err != nil {
+			return nil, err
+		}
+		return []string{strconv.FormatBool(value)}, nil
+	case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		var value json.Number
+		if err := json.Unmarshal(data, &value); err != nil {
+			return nil, err
+		}
+		return []string{value.String()}, nil
+	case '[':
+		var rawItems []json.RawMessage
+		if err := json.Unmarshal(data, &rawItems); err != nil {
+			return nil, err
+		}
+		values := make([]string, 0, len(rawItems))
+		for _, item := range rawItems {
+			parsed, err := parseConditionValueList(item)
+			if err != nil {
+				return nil, err
+			}
+			values = append(values, parsed...)
+		}
+		return values, nil
+	default:
+		return nil, fmt.Errorf("unexpected condition value payload: %s", string(data))
+	}
 }
 
 func sortedKeys[K ~string, V any](m map[K]V) []K {
