@@ -2,6 +2,10 @@
 
 Turns S3 bucket policies into plain English.
 
+![1000026298](https://github.com/user-attachments/assets/d55f802f-dd0a-4684-b8fe-798273060985)
+
+<img width="1344" height="880" alt="1000026303" src="https://github.com/user-attachments/assets/616a60f0-c674-4edf-b6f6-72aad57eb460" />
+
 ## Usage
 
 ```bash
